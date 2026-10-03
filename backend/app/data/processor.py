@@ -1,4 +1,5 @@
 from pathlib import Path
+from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 
 import numpy as np
 import pandas as pd
@@ -10,6 +11,21 @@ PROJECT_ROOT = Path(__file__).resolve().parents[3]
 PROCESSED_DIR = PROJECT_ROOT / "data" / "processed"
 PROCESSED_FILE = PROCESSED_DIR / "reviews_processed.csv"
 
+def calculate_sentiment(text: str, analyzer: SentimentIntensityAnalyzer) -> str:
+    """Classify review text using VADER sentiment analysis."""
+
+    if not isinstance(text, str) or not text.strip():
+        return "Neutral"
+
+    compound_score = analyzer.polarity_scores(text)["compound"]
+
+    if compound_score >= 0.05:
+        return "Positive"
+
+    if compound_score <= -0.05:
+        return "Negative"
+
+    return "Neutral"
 
 def process_reviews() -> pd.DataFrame:
     """Clean and enrich the raw review dataset."""
@@ -77,6 +93,12 @@ def process_reviews() -> pd.DataFrame:
 
     # Add convenient year field.
     df["review_year"] = df["review/time"].dt.year
+
+    analyzer = SentimentIntensityAnalyzer()
+
+    df["sentiment"] = df["review/text"].apply(
+        lambda text: calculate_sentiment(text, analyzer)
+    )
 
     return df
 
