@@ -12,10 +12,6 @@ import {
 
 const navigation = [
   {
-    label: "Overview",
-    href: "/",
-  },
-  {
     label: "Reviews",
     href: "/reviews",
   },
@@ -120,14 +116,18 @@ function ThemeToggle() {
   const savedTheme =
     typeof window !== "undefined" &&
     window.localStorage.getItem("reviewlens-theme");
-  
-  const [isLight, setIsLight] = useState(savedTheme === "light");
-  
+
+  const [isLight, setIsLight] = useState(
+    savedTheme === "light",
+  );
+
   useEffect(() => {
-    if (savedTheme === "light") {
+    if (isLight) {
       document.documentElement.classList.add("light");
+    } else {
+      document.documentElement.classList.remove("light");
     }
-  }, [savedTheme]);
+  }, [isLight]);
 
   function toggleTheme() {
     const nextIsLight = !isLight;
@@ -174,37 +174,44 @@ function ThemeToggle() {
 }
 
 export default function ReviewLensHeader() {
+  function goHome() {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  }
+
   return (
     <header className="sticky top-0 z-50 border-b border-[var(--border)] bg-[var(--background)]/85 backdrop-blur-xl">
       <div className="mx-auto flex h-[72px] max-w-[1440px] items-center justify-between px-5 sm:px-8 lg:px-10">
-        <div className="flex items-center gap-3">
-          <Link
-            href="/"
-            aria-label="ReviewLens home"
-            className="flex items-center"
-          >
-            <ReviewLensMark />
-          </Link>
+
+        {/* ReviewLens brand / home navigation */}
+        <Link
+          href="/"
+          aria-label="Go to ReviewLens home"
+          onClick={goHome}
+          className="group flex items-center gap-3"
+        >
+          <ReviewLensMark />
 
           <div className="leading-none">
-            <Link
-              href="/"
-              className="block text-[17px] font-semibold tracking-[-0.025em]"
-            >
+            <div className="text-[17px] font-semibold tracking-[-0.025em]">
               <span className="text-cyan-300">
                 Review
               </span>
+
               <span className="text-indigo-300">
                 Lens
               </span>
-            </Link>
+            </div>
 
             <p className="mt-1 hidden text-[10px] font-medium uppercase tracking-[0.16em] text-[var(--text-muted)] sm:block">
-              Customer insights
+              Voice of Customers
             </p>
           </div>
-        </div>
+        </Link>
 
+        {/* Main navigation */}
         <nav className="hidden items-center gap-1 lg:flex">
           {navigation.map((item) => (
             <Link
@@ -217,7 +224,10 @@ export default function ReviewLensHeader() {
           ))}
         </nav>
 
+        {/* Header actions */}
         <div className="flex items-center gap-2">
+
+          {/* Search */}
           <button
             type="button"
             aria-label="Search reviews"
@@ -231,6 +241,7 @@ export default function ReviewLensHeader() {
 
           <div className="hidden h-7 w-px bg-[var(--border)] sm:block" />
 
+          {/* Analytics indicator */}
           <div className="hidden items-center gap-2 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 sm:flex">
             <BarChart3
               size={15}
@@ -245,6 +256,7 @@ export default function ReviewLensHeader() {
 
           <div className="hidden h-7 w-px bg-[var(--border)] sm:block" />
 
+          {/* Customer voice indicator */}
           <div className="hidden items-center gap-2 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 sm:flex">
             <Star
               size={14}
@@ -253,10 +265,11 @@ export default function ReviewLensHeader() {
             />
 
             <span className="text-[11px] font-medium text-[var(--text-secondary)]">
-              Customer voice
+              VOICE OF CUSTOMERS
             </span>
           </div>
 
+          {/* Theme toggle */}
           <ThemeToggle />
         </div>
       </div>
