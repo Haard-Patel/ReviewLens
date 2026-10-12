@@ -4,10 +4,12 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import {
   BarChart3,
+  Menu,
   Moon,
   Search,
   Star,
   Sun,
+  X,
 } from "lucide-react";
 
 const navigation = [
@@ -174,12 +176,14 @@ function ThemeToggle() {
 }
 
 export default function ReviewLensHeader() {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   function goHome() {
     window.scrollTo({
       top: 0,
       behavior: "smooth",
     });
   }
+  
 
   return (
     <header className="sticky top-0 z-50 border-b border-[var(--border)] bg-[var(--background)]/85 backdrop-blur-xl">
@@ -269,10 +273,47 @@ export default function ReviewLensHeader() {
             </span>
           </div>
 
+          {/* Mobile navigation toggle */}
+          <button
+            type="button"
+            aria-label={
+              mobileMenuOpen
+                ? "Close navigation menu"
+                : "Open navigation menu"
+            }
+            aria-expanded={mobileMenuOpen}
+            onClick={() =>
+              setMobileMenuOpen(!mobileMenuOpen)
+            }
+            className="flex h-10 w-10 items-center justify-center rounded-xl border border-[var(--border)] bg-[var(--surface)] text-[var(--text-secondary)] transition-all duration-200 hover:border-[var(--border-strong)] hover:text-[var(--text-primary)] lg:hidden"
+          >
+            {mobileMenuOpen ? (
+              <X size={18} strokeWidth={1.8} />
+            ) : (
+              <Menu size={18} strokeWidth={1.8} />
+            )}
+          </button>
+
           {/* Theme toggle */}
           <ThemeToggle />
         </div>
       </div>
+      {mobileMenuOpen && (
+        <div className="border-t border-[var(--border)] bg-[var(--background)]/95 px-5 py-4 backdrop-blur-xl lg:hidden">
+          <nav className="mx-auto flex max-w-[1440px] flex-col gap-1">
+            {navigation.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                onClick={() => setMobileMenuOpen(false)}
+                className="rounded-xl px-4 py-3 text-sm font-medium text-[var(--text-secondary)] transition-colors duration-200 hover:bg-[var(--surface-soft)] hover:text-[var(--text-primary)]"
+              >
+                {item.label}
+              </Link>
+            ))}
+          </nav>
+        </div>
+      )}
     </header>
   );
 }

@@ -55,30 +55,36 @@ export default function ProductsPage() {
   useEffect(() => {
     let active = true;
 
-    setLoading(true);
-    setError(null);
+    const fetchData = async () => {
+      setLoading(true);
+      setError(null);
 
-    getProducts(page, PAGE_SIZE, query || undefined)
-      .then((response) => {
+      try {
+        const response = await getProducts(page, PAGE_SIZE, query || undefined, sort);
         if (active) {
           setData(response as ProductsResponse);
         }
-      })
-      .catch((requestError) => {
+      } catch (requestError: unknown) {
         if (active) {
-          setError(requestError.message);
+          if (requestError instanceof Error) {
+            setError(requestError.message);
+          } else {
+            setError("An unknown error occurred.");
+          }
         }
-      })
-      .finally(() => {
+      } finally {
         if (active) {
           setLoading(false);
         }
-      });
+      }
+    };
+
+    fetchData();
 
     return () => {
       active = false;
     };
-  }, [page, query]);
+  }, [page, query, sort]);
 
   function submitSearch(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -86,17 +92,7 @@ export default function ProductsPage() {
     setQuery(search.trim());
   }
 
-  const products = useMemo(() => {
-    if (!data) return [];
-
-    return [...data.products].sort((a, b) => {
-      if (sort === "highest") return b.average_rating - a.average_rating;
-      if (sort === "lowest") return a.average_rating - b.average_rating;
-      if (sort === "positive") return b.positive_percentage - a.positive_percentage;
-      if (sort === "negative") return b.negative_percentage - a.negative_percentage;
-      return b.review_count - a.review_count;
-    });
-  }, [data, sort]);
+  const products = data?.products ?? [];
 
   const totalPages = data ? Math.max(1, Math.ceil(data.total_products / PAGE_SIZE)) : 1;
 
@@ -180,7 +176,10 @@ export default function ProductsPage() {
               <select
                 id="product-sort"
                 value={sort}
-                onChange={(event) => setSort(event.target.value as SortOption)}
+                onChange={(event) => {
+                  setSort(event.target.value as SortOption);
+                  setPage(1);
+                }}
                 className="h-11 rounded-xl border border-[var(--border)] bg-[var(--surface-raised)] px-3 text-sm text-[var(--text-primary)] outline-none focus:border-[var(--brand-500)]"
               >
                 <option value="reviews">Most reviewed</option>

@@ -7,6 +7,7 @@ def get_products(
     page: int = 1,
     page_size: int = 20,
     search: str | None = None,
+    sort: str = "reviews",
 ) -> dict:
     """Return product-level analytics for ReviewLens."""
 
@@ -84,9 +85,27 @@ def get_products(
     # Sort by review volume
     # ---------------------------------------------------------
 
+# ---------------------------------------------------------
+# Sort all matching products before pagination
+# ---------------------------------------------------------
+
+    sort_options = {
+        "reviews": ("review_count", False),
+        "highest": ("average_rating", False),
+        "lowest": ("average_rating", True),
+        "positive": ("positive_percentage", False),
+        "negative": ("negative_percentage", False),
+    }
+
+    sort_column, ascending = sort_options.get(
+        sort,
+        ("review_count", False),
+    )
+
     products = products.sort_values(
-        "review_count",
-        ascending=False,
+        by=[sort_column, "review_count"],
+        ascending=[ascending, False],
+        kind="mergesort",
     )
 
     # ---------------------------------------------------------

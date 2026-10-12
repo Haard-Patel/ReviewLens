@@ -61,11 +61,13 @@ export function getProducts(
   page = 1,
   pageSize = 20,
   search?: string,
+  sort = "reviews",
 ) {
   const params = new URLSearchParams();
 
   params.set("page", String(page));
   params.set("page_size", String(pageSize));
+  params.set("sort", sort);
 
   if (search) {
     params.set("search", search);
@@ -75,7 +77,6 @@ export function getProducts(
     `/api/products?${params.toString()}`,
   );
 }
-
 
 export function getRatings() {
   return fetchApi("/api/ratings");

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+
 import {
   Activity,
   BarChart3,
@@ -9,7 +10,9 @@ import {
   ThumbsDown,
   ThumbsUp,
 } from "lucide-react";
+
 import Link from "next/link";
+
 import {
   Area,
   AreaChart,
@@ -83,7 +86,7 @@ export default function Home() {
               ))}
             </div>
   
-            <div className="h-80 rounded-2xl border border-[var(--border)] bg-[var(--surface)]" />
+            <div className="h-[260px] sm:h-80 rounded-2xl border border-[var(--border)] bg-[var(--surface)]" />
           </div>
         </div>
       </main>
@@ -346,7 +349,7 @@ export default function Home() {
             dataKey="year"
             tick={{
               fill: "var(--text-muted)",
-              fontSize: 11,
+              fontSize: 12,
             }}
             tickLine={false}
             axisLine={false}
@@ -422,7 +425,7 @@ export default function Home() {
   </div>
 
   <div className="h-[320px] w-full">
-    <ResponsiveContainer width="100%" height="100%">
+    <ResponsiveContainer width="100%" height="280%">
       <BarChart
         data={ratingDistribution}
         layout="vertical"
@@ -476,7 +479,7 @@ export default function Home() {
             "Reviews",
           ]}
         />
-
+        <div className="h-[280px] sm:h-80"></div>
         <Bar
           dataKey="reviews"
           fill="#8B7CF6"
@@ -505,7 +508,7 @@ export default function Home() {
 
   <div className="grid gap-6 lg:grid-cols-[1fr_280px] lg:items-center">
     <div className="h-[280px] w-full">
-      <ResponsiveContainer width="100%" height="100%">
+      <ResponsiveContainer width="100%" height="260%">
         <BarChart
           data={sentimentDistribution}
           margin={{
